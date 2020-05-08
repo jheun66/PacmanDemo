@@ -1,0 +1,12 @@
+{
+   "SpriteData" : {
+      "ImageName" : [ "tiles.png" ],
+      "position" : {
+         "pos" : [ 10.0, 20.0, 30.0 ]
+      },
+      "uvData" : {
+         "u" : 1.0,
+         "v" : 1.0
+      }
+   }
+}

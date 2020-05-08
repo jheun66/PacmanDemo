@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Program.cpp" />
+    <ClCompile Include="Demos\RectDemo.cpp" />
+    <ClCompile Include="Demos\GUIDemo.cpp" />
+    <ClCompile Include="Demos\TextureDemo.cpp" />
+    <ClCompile Include="Demos\RunningGameDemo.cpp" />
+    <ClCompile Include="Demos\SoundDemo.cpp" />
+    <ClCompile Include="Demos\RTTDemo.cpp" />
+    <ClCompile Include="Demos\AnimationDemo.cpp" />
+    <ClCompile Include="Demos\TileMapDemo.cpp" />
+    <ClCompile Include="Demos\JsonDemo.cpp" />
+    <ClCompile Include="Demos\BlurDemo.cpp" />
+    <ClCompile Include="Demos\LightDemo.cpp" />
+    <ClCompile Include="Demos\TileCharacterDemo.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Program.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Demos\RectDemo.h" />
+    <ClInclude Include="Demos\GUIDemo.h" />
+    <ClInclude Include="Demos\TextureDemo.h" />
+    <ClInclude Include="Demos\RunningGameDemo.h" />
+    <ClInclude Include="Demos\SoundDemo.h" />
+    <ClInclude Include="Demos\RTTDemo.h" />
+    <ClInclude Include="Demos\AnimationDemo.h" />
+    <ClInclude Include="Demos\TileMapDemo.h" />
+    <ClInclude Include="Demos\JsonDemo.h" />
+    <ClInclude Include="Demos\BlurDemo.h" />
+    <ClInclude Include="Demos\LightDemo.h" />
+    <ClInclude Include="Demos\TileCharacterDemo.h" />
+  </ItemGroup>
+</Project>
