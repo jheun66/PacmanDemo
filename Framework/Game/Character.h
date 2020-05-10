@@ -17,6 +17,8 @@ public:
 	Vector3 GetPosition() { return animRect->GetPosition(); }
 	void Move(Vector3 destination) { animRect->Move(destination); }
 
+	Animator* GetAnimator() { return animator; }
+
 protected:
 	AnimationRect* animRect = nullptr;
 	Animator* animator = nullptr;

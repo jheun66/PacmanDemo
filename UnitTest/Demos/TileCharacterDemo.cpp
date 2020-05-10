@@ -5,6 +5,8 @@
 #include "TileMap/TileMap.h"
 #include "TileMap/TileSet.h"
 
+
+
 void TileCharacterDemo::Init()
 {
 	TileSet::Create();
@@ -48,25 +50,53 @@ void TileCharacterDemo::GUI()
 
 void TileCharacterDemo::PlayerMove()
 {
-	if (KeyPressUp)
+	if (KeyDownUp)
+		player->SetDirection(UP);
+	else if (KeyDownDown)
+		player->SetDirection(DOWN);
+	else if (KeyDownRight)
+		player->SetDirection(RIGHT);
+	else if (KeyDownLeft)
+		player->SetDirection(LEFT);
+
+	switch (player->GetDirection())
+	{
+	case NONE:
+		break;
+	case UP:
 		destination = tm->GetNextTilePos(player->GetCenterPosition(), Vector2(0, 1), bWalkable);
-	else if(KeyPressDown)
+		break;
+	case DOWN:
 		destination = tm->GetNextTilePos(player->GetCenterPosition(), Vector2(0, -1), bWalkable);
-	else if (KeyPressRight)
-		destination = tm->GetNextTilePos(player->GetCenterPosition(), Vector2(1, 0), bWalkable);
-	else if (KeyPressLeft)
+		break;
+	case LEFT:
 		destination = tm->GetNextTilePos(player->GetCenterPosition(), Vector2(-1, 0), bWalkable);
+		break;
+	case RIGHT:
+		destination = tm->GetNextTilePos(player->GetCenterPosition(), Vector2(1, 0), bWalkable);
+		break;
+	default:
+		break;
+	}
+		
 
 	static Vector3 newPos = Values::ZeroVector;
 	if (!Math::Approximation(player->GetPosition(), destination, 0.001f) && bWalkable) 
 	{
+		player->GetAnimator()->SetIsStop(false);
 		D3DXVec3Lerp(&newPos, &player->GetPosition(), &destination, 10 * Time::Delta());
 		player->Move(newPos);
 	}
-	else if (!Math::Approximation(player->GetPosition(), destination, 40+0.001f) && !bWalkable)
+	else if (!Math::Approximation(player->GetPosition(), destination, 40 + 0.001f) && !bWalkable)
 	{
+		player->GetAnimator()->SetIsStop(false);
 		D3DXVec3Lerp(&newPos, &player->GetPosition(), &destination, 10 * Time::Delta());
 		player->Move(newPos);
+	}
+	else
+	{
+		// 애니메이션 멈추기
+		player->GetAnimator()->SetIsStop(true);
 	}
 
 }

@@ -14,6 +14,14 @@ public:
 		bool bReversed = false
 	);
 
+	AnimationClip
+	(
+		wstring clipName,
+		wstring jsonPath,
+		vector<string> fileNames,
+		bool bReversed = false
+	);
+
 
 	wstring GetClipName() { return clipName; }
 
@@ -70,15 +78,22 @@ public:
 		idle = clip;
 		AddAnimClip(clip);
 	}
+	void SetDieClip(AnimationClip* clip)
+	{
+		idle = clip;
+		AddAnimClip(clip);
+	}
 
 	void PlayMoveLeft() { SetCurrentAnimClip(moveLeft->clipName); }
 	void PlayMoveRight() { SetCurrentAnimClip(moveRight->clipName); }
 	void PlayMoveUp() { SetCurrentAnimClip(moveUp->clipName); }
 	void PlayMoveDown() { SetCurrentAnimClip(moveDown->clipName); }
 	void PlayIdle() { SetCurrentAnimClip(idle->clipName); }
+	void PlayDie() { SetCurrentAnimClip(die->clipName); }
 
 	bool CheckAnimClipDuplication(wstring clipName);
 	
+	void SetIsStop(bool isStop) { this->isStop = isStop; }
 
 private:
 	unordered_map<wstring, AnimationClip*> animClips;
@@ -91,9 +106,12 @@ private:
 	AnimationClip* moveRight = nullptr;
 	AnimationClip* moveUp = nullptr;
 	AnimationClip* moveDown = nullptr;
+	AnimationClip* die = nullptr;
 
 	float deltaTime = 0.0f;
 	float playRate = 1.0f / 15.0f;
+
+	bool isStop = false;
 
 	function<void(ID3D11ShaderResourceView*)> func = nullptr;
 };

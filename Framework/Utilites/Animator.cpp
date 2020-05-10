@@ -27,6 +27,55 @@ AnimationClip::AnimationClip(wstring clipName, Texture2D * srcTex, UINT frameCou
 	}
 }
 
+AnimationClip::AnimationClip(wstring clipName, wstring jsonPath, vector<string> fileNames, bool bReversed)
+	: clipName(clipName), bReversed(bReversed)
+{
+	frameCount = fileNames.size();
+
+	Json::Value root;
+	Json::ReadData(jsonPath, &root);
+	Json::Value meta = root["meta"];
+
+	string imageName;
+	Json::GetValue(meta, "image", imageName);
+
+	Json::Value size = meta["size"];
+	int imageWidth, imageHeight;
+	Json::GetValue(size, "w", imageWidth);
+	Json::GetValue(size, "h", imageHeight);
+
+	Vector2 imageSize = Vector2((float)imageWidth, (float)imageHeight);
+	Vector2 texelSize = Vector2(1.0f / imageWidth, 1.0f / imageHeight);
+
+	Texture2D * srcTex = new Texture2D(TexturePath + String::ToWstring(imageName));
+
+	srv = srcTex->GetSRV();
+
+	Json::Value frames = root["frames"];
+
+	for (string fileName : fileNames)
+	{
+		Json::Value uvData = frames[fileName]["frame"];
+
+		Vector2 keyframe;
+		int sizeX = 0, sizeY = 0;
+		int	startX = 0, startY = 0;
+
+		Json::GetValue(uvData, "x", startX);
+		Json::GetValue(uvData, "y", startY);
+
+		keyframe.x = startX * texelSize.x;
+		keyframe.y = startY * texelSize.y;
+		keyframes.push_back(keyframe);
+
+		// 애니메이션 이미지 한장의 크기
+		Json::GetValue(uvData, "w", sizeX);
+		Json::GetValue(uvData, "h", sizeY);
+
+		texelFrameSize = Vector2(sizeX * texelSize.x, sizeY * texelSize.y);	// 어차피 애니메이션 이미지 크기가 다 똑같음
+	}
+}
+
 Animator::Animator()
 {
 }
@@ -45,14 +94,16 @@ void Animator::Update()
 		if (currentClip->bReversed == false)
 		{
 			currentFrame = currentClip->keyframes[currentFrameIndex];
-			currentFrameIndex++;
+			if(!isStop)
+				currentFrameIndex++;
 			if (currentFrameIndex == currentClip->frameCount)
 				currentFrameIndex = 0;
 		}
 		else
 		{
 			currentFrame = currentClip->keyframes[currentFrameIndex];
-			currentFrameIndex--;
+			if (!isStop)
+				currentFrameIndex--;
 			if (currentFrameIndex == -1)
 				currentFrameIndex = currentClip->frameCount - 1;
 		}
