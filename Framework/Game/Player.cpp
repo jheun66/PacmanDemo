@@ -1,31 +1,15 @@
 #include "Framework.h"
 #include "Player.h"
 
+#include "TileMap/TileMap.h"
+#include "TileMap/Tile.h"
+
 Player::Player(Vector3 position, Vector3 size)
 	: Character(position, size)
 {
-	//Texture2D* atahoTex = new Texture2D(TexturePath + L"ataho.png");
-	//textureMap.insert(make_pair("Ataho", atahoTex));
+	life = 3;
+	state = IDLE;
 
-	//Vector2 textureSize = Vector2((float)atahoTex->GetWidth(), (float)atahoTex->GetHeight());
-
-	//AnimationClip* runD = new AnimationClip(L"RunD", atahoTex, 5, Vector2(0,0), textureSize * 0.5f);
-	//AnimationClip* runL = new AnimationClip(L"RunL", atahoTex, 5, Vector2(textureSize.x * 0.5f, 0), Vector2(textureSize.x, textureSize.y*0.5f));
-	//AnimationClip* runU = new AnimationClip(L"RunU", atahoTex, 5, Vector2(0, textureSize.y * 0.5f), Vector2(textureSize.x*0.5f, textureSize.y));
-	//AnimationClip* runR = new AnimationClip(L"RunR", atahoTex, 5, textureSize * 0.5f, textureSize);
-	//
-	//animator->SetMoveDownClip(runD);
-	//animator->SetMoveUpClip(runU);
-	//animator->SetMoveRightClip(runR);
-	//animator->SetMoveLeftClip(runL);
-
-
-
-	//animRect->SetAnimator(animator);
-	//animator->SetCurrentAnimClip(runD->GetClipName());
-
-	
-	
 	wstring file0 = TexturePath + L"pacman.json";
 	wstring file1 = TexturePath + L"death.json";
 
@@ -61,23 +45,213 @@ Player::Player(Vector3 position, Vector3 size)
 
 Player::~Player()
 {
+	SAFE_DELETE(idle);
+	SAFE_DELETE(runD);
+	SAFE_DELETE(runL);
+	SAFE_DELETE(runU);
+	SAFE_DELETE(runR);
+	SAFE_DELETE(die);
 }
 
 void Player::Update()
 {
+	// 애니메이션에 대한 update
 	__super::Update();
-	PlayerMove();
-	//animRect->Move();
+
+
 }
 
-void Player::PlayerMove()
+void Player::PlayerMove(TileMap * tileMap)
 {
-	if (KeyPressUp)
-		animator->PlayMoveUp();
-	else if (KeyPressDown)
-		animator->PlayMoveDown();
-	else if (KeyPressLeft)
-		animator->PlayMoveLeft();
-	else if (KeyPressRight)
-		animator->PlayMoveRight();
+	if (state == IDLE)
+	{
+		animator->SetCurrentAnimClip(idle->GetClipName());
+		// 방향키를 누르면 방향이 정해지면서 상태 변경
+		if (KeyDownUp)
+		{
+			dir = UP;
+			exDir = dir;
+			state = MOVE;
+		}
+		else if (KeyDownDown)
+		{
+			dir = DOWN;
+			exDir = dir;
+			state = MOVE;
+		}
+		else if (KeyDownRight)
+		{
+			dir = RIGHT;
+			exDir = dir;
+			state = MOVE;
+		}
+		else if (KeyDownLeft)
+		{
+			dir = LEFT;
+			exDir = dir;
+			state = MOVE;
+		}
+	}
+
+	if (state == MOVE)
+	{
+		// 방향 변경
+		if (KeyDownUp)
+		{
+			dir = UP;
+		}
+		else if (KeyDownDown)
+		{
+			dir = DOWN;
+		}
+		else if (KeyDownRight)
+		{
+			dir = RIGHT;
+		}
+		else if (KeyDownLeft)
+		{
+			dir = LEFT;
+		}
+
+		Vector3 destination = GetPosition();
+		Vector3 pacmanPos = GetPosition();
+		Tile * nextTile = nullptr;
+		bool bWalkable; 
+		Tile * nextDiagonalTile = tileMap->GetNextTile(pacmanPos, dirVec[exDir] + dirVec[dir]);
+
+		if (dir == exDir)
+		{
+			nextTile = tileMap->GetNextTile(pacmanPos, dirVec[dir]);
+			bWalkable = nextTile->GetIsWalkable();
+
+			if (bWalkable)
+			{
+				animator->SetIsStop(false);
+				destination = tileMap->GetNextTileCenterPos(pacmanPos, dirVec[dir]);
+				switch (dir)
+				{
+				case UP:
+					animator->PlayMoveUp();
+					break;
+				case DOWN:
+					animator->PlayMoveDown();
+					break;
+				case LEFT:
+					animator->PlayMoveLeft();
+					break;
+				case RIGHT:
+					animator->PlayMoveRight();
+					break;
+				default:
+					break;
+				}
+
+			}
+			else
+			{
+				animator->SetIsStop(true);
+				destination = tileMap->GetNextTileCenterPos(pacmanPos, Vector2(0,0));
+			}
+			Vector3 newPos = Values::ZeroVector;
+			if (!Math::Approximation(pacmanPos, destination, 0.1f))
+			{
+				D3DXVec3Lerp(&newPos, &pacmanPos, &destination, 10 * Time::Delta());
+				Move(newPos);
+			}
+			
+		}
+		else if ((3 - dir) == exDir)
+		{
+			// 방향이 반대일 때
+			exDir = dir;
+		}
+		else
+		{
+			nextTile = tileMap->GetNextTile(pacmanPos, dirVec[exDir]);
+
+			// 벽에 부딫친 경우
+			if (!nextTile->GetIsWalkable())
+			{
+				exDir = dir;
+			}
+			else
+			{
+				nextTile = tileMap->GetNextTile(pacmanPos, dirVec[dir]);
+				bool bWalkable = nextTile->GetIsWalkable();
+				if (bWalkable)
+				{
+					destination = tileMap->GetNextTileCenterPos(pacmanPos, dirVec[dir]);
+					switch (dir)
+					{
+					case UP:
+						animator->PlayMoveUp();
+						break;
+					case DOWN:
+						animator->PlayMoveDown();
+						break;
+					case LEFT:
+						animator->PlayMoveLeft();
+						break;
+					case RIGHT:
+						animator->PlayMoveRight();
+						break;
+					default:
+						break;
+					}
+					Vector3 newPos = Values::ZeroVector;
+
+					if (!Math::Approximation(pacmanPos, destination, 0.001f))
+					{
+						D3DXVec3Lerp(&newPos, &pacmanPos, &destination, 10 * Time::Delta());
+						Move(newPos);
+					}
+					else
+					{
+						exDir = dir;
+					}
+				}
+				else if (nextDiagonalTile->GetIsWalkable())
+				{
+
+					destination = tileMap->GetNextTileCenterPos(pacmanPos, dirVec[exDir] + dirVec[dir]);
+					switch (dir)
+					{
+					case UP:
+						animator->PlayMoveUp();
+						break;
+					case DOWN:				
+						animator->PlayMoveDown();
+						break;
+					case LEFT:
+						animator->PlayMoveLeft();
+						break;
+					case RIGHT:
+						animator->PlayMoveRight();
+						break;
+					default:
+						break;
+					}
+					Vector3 newPos = Values::ZeroVector;
+
+					if (!Math::Approximation(pacmanPos, destination, 0.001f))
+					{
+						D3DXVec3Lerp(&newPos, &pacmanPos, &destination, 10 * Time::Delta());
+						Move(newPos);
+					}
+					else
+					{
+						exDir = dir;
+					}
+
+				}
+				else
+				{
+					dir = exDir;
+				}
+
+
+			}
+
+		}
+	}
 }

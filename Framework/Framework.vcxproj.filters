@@ -42,6 +42,8 @@
     <ClInclude Include="Geometries\BoundingBox\OBB.h" />
     <ClInclude Include="Game\Character.h" />
     <ClInclude Include="Game\Player.h" />
+    <ClInclude Include="Game\Ghost.h" />
+    <ClInclude Include="Game\Red.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Systems\Graphics.cpp" />
@@ -81,5 +83,11 @@
     <ClCompile Include="Geometries\BoundingBox\OBB.cpp" />
     <ClCompile Include="Game\Character.cpp" />
     <ClCompile Include="Game\Player.cpp" />
+    <ClCompile Include="Game\Ghost.cpp" />
+    <ClCompile Include="Game\Red.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
 </Project>

@@ -160,6 +160,8 @@ copy /Y "$(SolutionDir)Debug\$(ProjectName).pdb" "$(SolutionDir)UnitTest"</Comma
   <ItemGroup>
     <ClInclude Include="Game\Character.h" />
     <ClInclude Include="Game\Player.h" />
+    <ClInclude Include="Game\Ghost.h" />
+    <ClInclude Include="Game\Red.h" />
     <ClInclude Include="Geometries\AnimationRect.h" />
     <ClInclude Include="Geometries\BlurredTexture.h" />
     <ClInclude Include="Geometries\BoundingBox\OBB.h" />
@@ -206,6 +208,8 @@ copy /Y "$(SolutionDir)Debug\$(ProjectName).pdb" "$(SolutionDir)UnitTest"</Comma
     </ClCompile>
     <ClCompile Include="Game\Character.cpp" />
     <ClCompile Include="Game\Player.cpp" />
+    <ClCompile Include="Game\Ghost.cpp" />
+    <ClCompile Include="Game\Red.cpp" />
     <ClCompile Include="Geometries\AnimationRect.cpp" />
     <ClCompile Include="Geometries\BlurredTexture.cpp" />
     <ClCompile Include="Geometries\BoundingBox\OBB.cpp" />
@@ -240,6 +244,10 @@ copy /Y "$(SolutionDir)Debug\$(ProjectName).pdb" "$(SolutionDir)UnitTest"</Comma
     <ClCompile Include="Utilites\Path.cpp" />
     <ClCompile Include="Utilites\RenderTexture.cpp" />
     <ClCompile Include="Utilites\String.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

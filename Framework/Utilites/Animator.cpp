@@ -144,6 +144,7 @@ void Animator::SetCurrentAnimClip(wstring clipName)
 	}
 }
 
+
 // ¿÷¿∏∏È true
 bool Animator::CheckAnimClipDuplication(wstring clipName)
 {

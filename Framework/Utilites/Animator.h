@@ -14,6 +14,7 @@ public:
 		bool bReversed = false
 	);
 
+	// json 파일 이용하여 클립생성
 	AnimationClip
 	(
 		wstring clipName,
@@ -27,7 +28,7 @@ public:
 
 private:
 	wstring clipName = L"";
-	vector<D3DXVECTOR2> keyframes;
+	vector<D3DXVECTOR2> keyframes;		// 시작 위치들
 	D3DXVECTOR2 texelFrameSize = D3DXVECTOR2(0, 0);
 	UINT frameCount = 0;
 	ID3D11ShaderResourceView* srv = nullptr;
@@ -47,6 +48,7 @@ public:
 	D3DXVECTOR2 GetTexelFrameSize() { return currentClip->texelFrameSize; }
 
 	void SetCurrentAnimClip(wstring clipName);
+
 
 	void SetSRVFunc(function<void(ID3D11ShaderResourceView*)> func)
 	{

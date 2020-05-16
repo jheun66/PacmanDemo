@@ -1,5 +1,14 @@
 #pragma once
 
+enum GameState {
+	MENU,
+	GAMESTART,
+	GAMEPLAY,
+	GAMEWIN,
+	PACMANDEATH,
+	GAMEOVER
+};
+
 class TileCharacterDemo	: public IObject
 {
 public:
@@ -14,15 +23,22 @@ public:
 
 	void GUI() override;
 
-	void PlayerMove();
 
 private:
 
+
 	class TileMap* tm = nullptr;
 	class Player* player = nullptr;
+	class Red* red = nullptr;
 
 	Vector3 destination = Values::ZeroVector;
 	bool bWalkable = true;
+
+	GameState state;
+
+	uint spacing;
+	uint width;
+	uint height;
 };
 
 /*

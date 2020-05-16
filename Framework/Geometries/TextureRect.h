@@ -21,7 +21,7 @@ public:
 	void SetSRV(wstring path);
 	void SetSRV(ID3D11ShaderResourceView* srv) { this->srv = srv; }
 
-	Vector3 GetCenterPosition() { return Vector3(position.x + size.x / 2.0f, position.y + size.y / 2.0f, 0.0f); }
+	Vector3 GetCenterPosition() { return Vector3(position.x , position.y , 0.0f); }
 	Vector3 GetCenterPositionInSS();
 
 protected:

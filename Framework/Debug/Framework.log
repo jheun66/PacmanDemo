@@ -1,7 +1,4 @@
-﻿  Character.cpp
-  Player.cpp
-  AnimationRect.cpp
-  Animator.cpp
+﻿  Player.cpp
   Framework.vcxproj -> C:\Users\jheun\source\repos\PacmanDemo\Debug\Framework.lib
           1개 파일이 복사되었습니다.
           1개 파일이 복사되었습니다.

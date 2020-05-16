@@ -31,4 +31,7 @@
     <ClInclude Include="Demos\LightDemo.h" />
     <ClInclude Include="Demos\TileCharacterDemo.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+  </ItemGroup>
 </Project>

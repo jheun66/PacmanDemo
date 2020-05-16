@@ -36,8 +36,10 @@ public:
 
 	
 	void GenerateTileMap();
-	Tile* GetTile(Vector3 worldMousePos);
-	Vector3 GetNextTilePos(Vector3 worldPos, Vector2 dir, OUT bool &bwalkable);
+	Tile* GetTile(Vector3 position);
+	Tile * GetNextTile(Vector3 position, Vector2 dir);
+	Vector3 GetNextTileCenterPos(Vector3 worldPos, Vector2 dir);
+	Vector3 GetNextTileCenterPos(Vector3 worldPos, Vector2 dir, OUT bool &bwalkable);
 	
 	void Build();	// 자식 노드 추가해주는 함수
 	void FindPath(Vector2 start, Vector2 end);	// 길찾는 함수
@@ -53,6 +55,10 @@ public:
 	void GetMousePos();
 
 	bool CheckDuplication(string str);
+
+	Tile** GetTiles() { return this->tiles; }
+
+	uint GetSpacing() { return spacing; }
 
 private:
 	uint width = 0;

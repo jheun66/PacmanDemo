@@ -283,17 +283,17 @@ void Graphics::SetGPUInfo()
 
 void Graphics::GUI()
 {
-	ImGui::BeginMainMenuBar();
-	{
-		if (ImGui::BeginMenu("SystemInfo"))
-		{
-			// 왼쪽에 체크박스
-			ImGui::Checkbox("VSync", &bVsync);
-			ImGui::TextColored(ImVec4(1, 1, 1, 1), gpuName.c_str());
-			ImGui::EndMenu();
-		}
-	}
-	ImGui::EndMainMenuBar();
+	//ImGui::BeginMainMenuBar();
+	//{
+	//	if (ImGui::BeginMenu("SystemInfo"))
+	//	{
+	//		// 왼쪽에 체크박스
+	//		ImGui::Checkbox("VSync", &bVsync);
+	//		ImGui::TextColored(ImVec4(1, 1, 1, 1), gpuName.c_str());
+	//		ImGui::EndMenu();
+	//	}
+	//}
+	//ImGui::EndMainMenuBar();
 }
 
 D3DEnumAdapterInfo::~D3DEnumAdapterInfo()

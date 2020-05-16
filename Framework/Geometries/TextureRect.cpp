@@ -5,10 +5,10 @@ TextureRect::TextureRect(D3DXVECTOR3 position, D3DXVECTOR3 size, float rotation)
 	:position(position), size(size), rotation(rotation)
 {
 	vertices.resize(4, VertexTexture());
-	vertices[0].position = D3DXVECTOR3(0.0f, 0.0f, 0);
-	vertices[1].position = D3DXVECTOR3(0.0f, 1.0f, 0);
-	vertices[2].position = D3DXVECTOR3(1.0f, 0.0f, 0);
-	vertices[3].position = D3DXVECTOR3(1.0f, 1.0f, 0);
+	vertices[0].position = D3DXVECTOR3(-0.5f, -0.5f, 0);
+	vertices[1].position = D3DXVECTOR3(-0.5f, 0.5f, 0);
+	vertices[2].position = D3DXVECTOR3(0.5f, -0.5f, 0);
+	vertices[3].position = D3DXVECTOR3(0.5f, 0.5f, 0);
 
 	vertices[0].uv = D3DXVECTOR2(0, 1);
 	vertices[1].uv = D3DXVECTOR2(0, 0);

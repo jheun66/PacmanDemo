@@ -59,8 +59,8 @@ typedef UINT		uint;
 #define SAFE_DELETE(p) {if(p) {delete(p); p = nullptr;}}
 #define SAFE_DELETE_ARRAY(p) {if(p) {delete[](p); p = nullptr;}}
 
-#define WinMaxWidth 1280
-#define WinMaxHeight 720
+#define WinMaxWidth 448
+#define WinMaxHeight 576
 
 const wstring ShaderPath = L"../_Shaders/";
 const wstring TexturePath = L"../_Textures/";

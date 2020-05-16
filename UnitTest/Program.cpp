@@ -81,13 +81,13 @@ void Program::PostRender()
 
 void Program::GUI()
 {
-	MainMenu();
+	//MainMenu();
 
 	
-	for (IObject* obj : objs)
+	/*for (IObject* obj : objs)
 	{
 		obj->GUI();
-	}
+	}*/
 }
 
 void Program::MainMenu()
@@ -169,8 +169,8 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE prevInstance,
 	desc.AppName = L"D2DGame";
 	desc.instance = instance;
 	desc.handle = NULL;
-	desc.width = 1280;
-	desc.height = 720;
+	desc.width = 448;
+	desc.height = 576;
 
 	Program* program = new Program();
 

@@ -206,14 +206,44 @@ void TileMap::GenerateTileMap()
 	}
 }
 
-Tile * TileMap::GetTile(Vector3 worldMousePos)
+Tile * TileMap::GetTile(Vector3 position)
 {
-	uint x = (int)worldMousePos.x / spacing;
-	uint y = (int)worldMousePos.y / spacing;
+	uint x = (int)position.x / spacing;
+	uint y = (int)position.y / spacing;
 	return &tiles[y][x];
 }
 
-Vector3 TileMap::GetNextTilePos(Vector3 worldPos, Vector2 dir, OUT bool & bwalkable)
+Tile * TileMap::GetNextTile(Vector3 position, Vector2 dir)
+{
+	int x = (int)(position.x / spacing + dir.x);
+	int y = (int)(position.y / spacing + dir.y);
+
+	// TODO : 예외 case 있음.. x,y가 배열 범위 넘어갈 경우 처리해주어야함(tunnel)
+
+	return &tiles[y][x];
+}
+
+Vector3 TileMap::GetNextTileCenterPos(Vector3 worldPos, Vector2 dir)
+{
+	int x = (int)(worldPos.x / spacing + dir.x);
+	int y = (int)(worldPos.y / spacing + dir.y);
+
+	if (x > (int)width - 1 || x < 0 || y >(int)height - 1 || y < 0) {
+		return GetTile(worldPos)->GetPosition();
+	}
+
+	tb->SetTileIndex(GetTile(worldPos)->GetIndex());
+
+	Vector3 vec = tiles[y][x].GetPosition();
+
+	vec.x += spacing * 0.5f;
+	vec.y += spacing * 0.5f;
+
+	return vec;
+}
+
+
+Vector3 TileMap::GetNextTileCenterPos(Vector3 worldPos, Vector2 dir, OUT bool & bwalkable)
 {
 	int x = (int)(worldPos.x / spacing + dir.x);
 	int y = (int)(worldPos.y / spacing + dir.y);
@@ -225,7 +255,12 @@ Vector3 TileMap::GetNextTilePos(Vector3 worldPos, Vector2 dir, OUT bool & bwalka
 	tb->SetTileIndex(GetTile(worldPos)->GetIndex());
 	bwalkable = tiles[y][x].GetIsWalkable();
 
-	return tiles[y][x].GetPosition();
+	Vector3 vec = tiles[y][x].GetPosition();
+
+	vec.x += spacing * 0.5f;
+	vec.y += spacing * 0.5f;
+
+	return vec;
 }
 
 void TileMap::Build()
