@@ -40,7 +40,13 @@ public:
 	Tile * GetNextTile(Vector3 position, Vector2 dir);
 	Vector3 GetNextTileCenterPos(Vector3 worldPos, Vector2 dir);
 	Vector3 GetNextTileCenterPos(Vector3 worldPos, Vector2 dir, OUT bool &bwalkable);
-	
+	bool IsOverCenter(Vector3 position, Vector2 dir);
+	bool InSlowZone(Vector3 position);
+	bool InHomeGate(Vector3 position);
+	bool InHome(Vector3 position);
+	bool InSpecialZone(Vector3 position);
+
+
 	void Build();	// 자식 노드 추가해주는 함수
 	void FindPath(Vector2 start, Vector2 end);	// 길찾는 함수
 
@@ -59,6 +65,10 @@ public:
 	Tile** GetTiles() { return this->tiles; }
 
 	uint GetSpacing() { return spacing; }
+
+	void DisplayRedTargetTile(Vector3 position);
+
+	bool OutOfMap(Vector3 position);
 
 private:
 	uint width = 0;

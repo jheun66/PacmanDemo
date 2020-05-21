@@ -84,10 +84,10 @@ void Program::GUI()
 	//MainMenu();
 
 	
-	/*for (IObject* obj : objs)
+	for (IObject* obj : objs)
 	{
 		obj->GUI();
-	}*/
+	}
 }
 
 void Program::MainMenu()

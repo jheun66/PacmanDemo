@@ -27,7 +27,7 @@ Player::Player(Vector3 position, Vector3 size)
 	runL = new AnimationClip(L"RunL", file0, animRunLFile);
 	runU = new AnimationClip(L"RunU", file0, animRunUFile);
 	runR = new AnimationClip(L"RunR", file0, animRunRFile);
-	die = new AnimationClip(L"Die", file1, animDieFile);
+	die = new AnimationClip(L"Die", file1, animDieFile, false, true);
 
 
 	animator->SetMoveDownClip(runD);
@@ -39,7 +39,8 @@ Player::Player(Vector3 position, Vector3 size)
 
 
 	animRect->SetAnimator(animator);
-	animator->SetCurrentAnimClip(idle->GetClipName());
+	animator->PlayIdle();
+	//animator->SetCurrentAnimClip(idle->GetClipName());
 	
 }
 
@@ -95,26 +96,32 @@ void Player::PlayerMove(TileMap * tileMap)
 
 	if (state == MOVE)
 	{
-		// 방향 변경
-		if (KeyDownUp)
+		Vector3 pacmanPos = GetPosition();
+		
+		// 터널에서는 안바뀌게
+		if (!tileMap->OutOfMap(pacmanPos))
 		{
-			dir = UP;
+			// 방향 변경
+			if (KeyDownUp)
+			{
+				dir = UP;
+			}
+			else if (KeyDownDown)
+			{
+				dir = DOWN;
+			}
+			else if (KeyDownRight)
+			{
+				dir = RIGHT;
+			}
+			else if (KeyDownLeft)
+			{
+				dir = LEFT;
+			}
 		}
-		else if (KeyDownDown)
-		{
-			dir = DOWN;
-		}
-		else if (KeyDownRight)
-		{
-			dir = RIGHT;
-		}
-		else if (KeyDownLeft)
-		{
-			dir = LEFT;
-		}
+	
 
 		Vector3 destination = GetPosition();
-		Vector3 pacmanPos = GetPosition();
 		Tile * nextTile = nullptr;
 		bool bWalkable; 
 		Tile * nextDiagonalTile = tileMap->GetNextTile(pacmanPos, dirVec[exDir] + dirVec[dir]);
@@ -122,41 +129,71 @@ void Player::PlayerMove(TileMap * tileMap)
 		if (dir == exDir)
 		{
 			nextTile = tileMap->GetNextTile(pacmanPos, dirVec[dir]);
-			bWalkable = nextTile->GetIsWalkable();
-
-			if (bWalkable)
+			if (nextTile != nullptr)
 			{
-				animator->SetIsStop(false);
-				destination = tileMap->GetNextTileCenterPos(pacmanPos, dirVec[dir]);
-				switch (dir)
+				bWalkable = nextTile->GetIsWalkable();
+				if (bWalkable)
 				{
-				case UP:
-					animator->PlayMoveUp();
-					break;
-				case DOWN:
-					animator->PlayMoveDown();
-					break;
-				case LEFT:
-					animator->PlayMoveLeft();
-					break;
-				case RIGHT:
-					animator->PlayMoveRight();
-					break;
-				default:
-					break;
-				}
+					animator->SetIsStop(false);
+					destination = tileMap->GetNextTileCenterPos(pacmanPos, dirVec[dir]);
+					switch (dir)
+					{
+					case UP:
+						animator->PlayMoveUp();
+						break;
+					case DOWN:
+						animator->PlayMoveDown();
+						break;
+					case LEFT:
+						animator->PlayMoveLeft();
+						break;
+					case RIGHT:
+						animator->PlayMoveRight();
+						break;
+					default:
+						break;
+					}
 
+				}
+				else
+				{
+					animator->SetIsStop(true);
+					destination = tileMap->GetNextTileCenterPos(pacmanPos, Vector2(0, 0));
+				}
 			}
 			else
 			{
-				animator->SetIsStop(true);
-				destination = tileMap->GetNextTileCenterPos(pacmanPos, Vector2(0,0));
+				// 터널에서
+				if (dir == LEFT)
+				{
+					destination = pacmanPos;
+					destination.x -= float(tileMap->GetSpacing());
+				}
+				else if (dir == RIGHT)
+				{
+					destination = pacmanPos;
+					destination.x += float(tileMap->GetSpacing());
+				}
 			}
-			Vector3 newPos = Values::ZeroVector;
-			if (!Math::Approximation(pacmanPos, destination, 0.1f))
+
+			if (pacmanPos.x > WinMaxWidth + (float(tileMap->GetSpacing()) * 3))
 			{
-				D3DXVec3Lerp(&newPos, &pacmanPos, &destination, 10 * Time::Delta());
-				Move(newPos);
+				pacmanPos.x = -(float(tileMap->GetSpacing()) * 3);
+				Move(pacmanPos);
+			}
+			else if (pacmanPos.x < -(float(tileMap->GetSpacing()) * 3))
+			{
+				pacmanPos.x = WinMaxWidth + (float(tileMap->GetSpacing()) * 3);
+				Move(pacmanPos);
+			}
+			else
+			{
+				Vector3 newPos = Values::ZeroVector;
+				if (!Math::Approximation(pacmanPos, destination, 0.1f))
+				{
+					D3DXVec3Lerp(&newPos, &pacmanPos, &destination, 10 * Time::Delta());
+					Move(newPos);
+				}
 			}
 			
 		}
@@ -178,6 +215,9 @@ void Player::PlayerMove(TileMap * tileMap)
 			{
 				nextTile = tileMap->GetNextTile(pacmanPos, dirVec[dir]);
 				bool bWalkable = nextTile->GetIsWalkable();
+
+				bool overCenter = tileMap->IsOverCenter(pacmanPos, dirVec[exDir]);
+				
 				if (bWalkable)
 				{
 					destination = tileMap->GetNextTileCenterPos(pacmanPos, dirVec[dir]);
@@ -210,7 +250,7 @@ void Player::PlayerMove(TileMap * tileMap)
 						exDir = dir;
 					}
 				}
-				else if (nextDiagonalTile->GetIsWalkable())
+				else if (nextDiagonalTile->GetIsWalkable() && overCenter)
 				{
 
 					destination = tileMap->GetNextTileCenterPos(pacmanPos, dirVec[exDir] + dirVec[dir]);
@@ -254,4 +294,14 @@ void Player::PlayerMove(TileMap * tileMap)
 
 		}
 	}
+}
+
+void Player::PlayerIdle()
+{
+	animator->SetCurrentAnimClip(idle->GetClipName());
+}
+
+void Player::PlayerDeath()
+{
+	animator->SetCurrentAnimClip(die->GetClipName());
 }

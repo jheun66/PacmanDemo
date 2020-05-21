@@ -29,6 +29,8 @@ private:
 
 	class TileMap* tm = nullptr;
 	class Player* player = nullptr;
+
+	vector<class Ghost*> ghosts;
 	class Red* red = nullptr;
 
 	Vector3 destination = Values::ZeroVector;
@@ -39,6 +41,9 @@ private:
 	uint spacing;
 	uint width;
 	uint height;
+
+	INT64 before; // 죽었을 때의 타이머
+	float elapsed = 0;
 };
 
 /*

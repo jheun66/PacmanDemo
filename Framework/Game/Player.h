@@ -18,8 +18,15 @@ public:
 	void Update();
 	void PlayerMove(class TileMap* tileMap);
 
+	void PlayerIdle();
+
+	void PlayerDeath();
+
 	void SetDirection(Direction dir) { this->dir = dir; }
 	Direction GetDirection() { return dir; }
+
+	void SetState(PlayerState state) { this->state = state; }
+	PlayerState GetState() { return state; }
 
 private:
 

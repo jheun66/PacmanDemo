@@ -24,6 +24,7 @@ public:
 	
 	Vector3 GetPosition() { return animRect->GetPosition(); }
 	void Move(Vector3 destination) { animRect->Move(destination); }
+	void Move(Vector2 direction) { animRect->Move(direction); }
 
 	Animator* GetAnimator() { return animator; }
 

@@ -2,11 +2,13 @@
 #include "TileCharacterDemo.h"
 
 #include "Game/Player.h"
+#include "Game/Ghost.h"
 #include "Game/Red.h"
 #include "TileMap/Tile.h"
 #include "TileMap/TileMap.h"
 #include "TileMap/TileSet.h"
 
+#include "Game/Collision.h"
 
 
 void TileCharacterDemo::Init()
@@ -20,10 +22,16 @@ void TileCharacterDemo::Init()
 	state = GAMESTART;
 	
 	tm = new TileMap(width, height, spacing);
-	tm->LoadTileDatas(TileMapDataPath + L"map8.tilemap");
+	tm->LoadTileDatas(TileMapDataPath + L"map10.tilemap");
+
 	Tile** tiles = tm->GetTiles();
+
 	player = new Player(Vector3(WinMaxWidth / 2 , WinMaxHeight / 4 + spacing/2 , 0), Vector3(spacing*2, spacing*2, 1));
-	red = new Red(tiles[height / 4][width / 4].GetPosition(), Vector3(spacing*2, spacing*2, 1));
+	red = new Red(Vector3(WinMaxWidth / 2, WinMaxHeight / 2 + 7*spacing/2 , 0), Vector3(spacing*2, spacing*2, 1));
+	red->SetTileMap(tm);
+	red->SetNextTile();
+
+	ghosts.push_back(red);
 
 	destination = player->GetPosition();
 
@@ -48,6 +56,7 @@ void TileCharacterDemo::Update()
 		player->Move(Vector3(WinMaxWidth / 2, WinMaxHeight / 4 + spacing / 2, 0));
 		
 		// 유령 위치 초기화
+		red->Move(Vector3(WinMaxWidth / 2, WinMaxHeight / 2 + 7 * spacing / 2, 0));
 
 		// 기본적인거 세팅한 후 게임 플레이로 변경
 		state = GAMEPLAY;
@@ -60,21 +69,68 @@ void TileCharacterDemo::Update()
 		player->Update();
 
 		
+		Tile* tile = tm->GetTile(player->GetPosition());
+		Collision::WithLPellet(player, ghosts, tm);
+		Collision::WithSPellet(player, tm);
+		Collision::WithGhost(player, red, tm);
+
+		if (Collision::IsWin())
+			state = GAMEWIN;
+		
+		if (player->GetState() == DEATH)
+		{
+			before = Time::Get()->GetBefore();
+			elapsed = 0;
+			state = PACMANDEATH;
+		}
+
 		// 유령 
+		red->MoveToTarget(player);
 		red->Update();
 	}
+	if (state == GAMEWIN)
+	{
+		player->SetState(IDLE);
+		player->Move(Vector3(WinMaxWidth / 2, WinMaxHeight / 4 + spacing / 2, 0));
+		player->PlayerIdle();
+		player->Update();
+		tm->LoadTileDatas(TileMapDataPath + L"map10.tilemap");
+	}
 
+	if (state == PACMANDEATH)
+	{
+		float f = 2;
+		if (Time::Get()->Timer(before, f, false, elapsed))
+		{
+			// 팩맨 위치 초기화
+			player->SetState(IDLE);
+			player->Move(Vector3(WinMaxWidth / 2, WinMaxHeight / 4 + spacing / 2, 0));
+			player->PlayerIdle();
 
+			// 유령 위치 초기화
+			red->Move(Vector3(WinMaxWidth / 2, WinMaxHeight / 2 + 7 * spacing / 2, 0));
+			state = GAMEPLAY;
+
+		}
+		
+		player->PlayerDeath();
+		player->Update();
+		
+	}
 }
 
 void TileCharacterDemo::Render()
 {
 	tm->Render();
+	if(state == GAMESTART || state == GAMEPLAY)
+	{
+		red->Render();
+	}
 	player->Render();
-	//red->Render();
 }
 
 void TileCharacterDemo::GUI()
 {
-
+	//tm->GUI();
+	//TileSet::Get()->GUI();
 }

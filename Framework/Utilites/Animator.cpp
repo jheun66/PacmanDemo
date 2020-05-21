@@ -1,8 +1,8 @@
 #include "Framework.h"
 #include "Animator.h"
 
-AnimationClip::AnimationClip(wstring clipName, Texture2D * srcTex, UINT frameCount, D3DXVECTOR2 startPos, D3DXVECTOR2 endPos, bool bReversed)
-	: clipName(clipName), frameCount(frameCount), bReversed(bReversed)
+AnimationClip::AnimationClip(wstring clipName, Texture2D * srcTex, UINT frameCount, D3DXVECTOR2 startPos, D3DXVECTOR2 endPos, bool bReversed, bool playOnce)
+	: clipName(clipName), frameCount(frameCount), bReversed(bReversed), playOnce(playOnce)
 {
 	srv = srcTex->GetSRV();
 
@@ -27,8 +27,8 @@ AnimationClip::AnimationClip(wstring clipName, Texture2D * srcTex, UINT frameCou
 	}
 }
 
-AnimationClip::AnimationClip(wstring clipName, wstring jsonPath, vector<string> fileNames, bool bReversed)
-	: clipName(clipName), bReversed(bReversed)
+AnimationClip::AnimationClip(wstring clipName, wstring jsonPath, vector<string> fileNames, bool bReversed, bool playOnce)
+	: clipName(clipName), bReversed(bReversed), playOnce(playOnce)
 {
 	frameCount = fileNames.size();
 
@@ -97,7 +97,15 @@ void Animator::Update()
 			if(!isStop)
 				currentFrameIndex++;
 			if (currentFrameIndex == currentClip->frameCount)
-				currentFrameIndex = 0;
+			{
+				if (currentClip->playOnce == false)
+					currentFrameIndex = 0;
+				else
+				{
+					currentFrameIndex--;
+					isStop = true;
+				}
+			}
 		}
 		else
 		{
@@ -105,7 +113,16 @@ void Animator::Update()
 			if (!isStop)
 				currentFrameIndex--;
 			if (currentFrameIndex == -1)
-				currentFrameIndex = currentClip->frameCount - 1;
+			{
+				if (currentClip->playOnce == false)
+					currentFrameIndex = currentClip->frameCount - 1;
+				else
+				{
+					currentFrameIndex--;
+					isStop = true;
+				}
+				
+			}
 		}
 		deltaTime = 0.0f;
 	}

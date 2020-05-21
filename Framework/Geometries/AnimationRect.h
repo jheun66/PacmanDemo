@@ -12,6 +12,7 @@ public:
 
 	void Move();
 	void Move(Vector3 destination);
+	void Move(Vector2 direction);
 	void SetAnimator(class Animator* animator);
 	void SetSRV(ID3D11ShaderResourceView* srv) { this->srv = srv; }
 

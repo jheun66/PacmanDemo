@@ -49,6 +49,9 @@ public:
 		color = Values::Black;
 	}
 
+	bool IsEaten() { return isEaten; }
+	void EatPallet() { isEaten = true; }
+
 private:
 	Vector3 position = Values::ZeroVector;
 	Vector2 startUV = Vector2(0, 0);
@@ -60,6 +63,8 @@ private:
 	bool isWalkable = true;
 	string spriteName = "";
 
+
+	bool isEaten = false;
 
 	float f = 0.0f;
 	float g = 0.0f;

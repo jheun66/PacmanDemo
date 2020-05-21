@@ -12,6 +12,9 @@ public:
 
 	void Start();
 	void Stop();
+	bool Timer(INT64 before, float& time, bool isStop, OUT float& elapsed);
+
+	INT64 GetBefore();
 
 	float FPS() const { return framePerSecond; }
 	float Running() const { return runningTime; }

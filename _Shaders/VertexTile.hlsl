@@ -70,14 +70,20 @@ float4 PS(PixelInput input) : SV_Target
     else 
         result = input.color;
     
-    if(_tileIndex == input.index)
+    //if(_tileIndex == input.index)
+    //{
+    //    if ( input.uv2.x < 0.1f
+    //        || input.uv2.x > 0.9f
+    //        || input.uv2.y < 0.1f
+    //        || input.uv2.y > 0.9f)
+    //        result = float4(1, 0, 0, 1);
+    //}
+    
+    if (_tileIndex != -1 && _tileIndex == input.index)
     {
-        if ( input.uv2.x < 0.1f
-            || input.uv2.x > 0.9f
-            || input.uv2.y < 0.1f
-            || input.uv2.y > 0.9f)
-            result = float4(1, 0, 0, 1);
+        result = float4(1, 0, 0, 1);
     }
+    
     
     return result;
     

@@ -17,8 +17,6 @@ TileMap::TileMap(uint width, uint height, uint spacing)
 	//srv = tileSet->tileSRV;
 
 	GenerateTileMap();
-	tiles[height / 2][width / 2].SetColor(Values::Red);
-	tiles[0][0].SetColor(Values::Red);
 
 	vertices.assign(4, VertexTile());
 
@@ -81,22 +79,26 @@ TileMap::~TileMap()
 
 void TileMap::Update()
 {
-	GetMousePos();
-	if (Mouse::Get()->Down(0))
-	{
-		Tile* tile = GetTile(worldMpos);
-		if (tile)
-		{
-			//tile->color = Values::Red;
-			tile->SetStartUV(tileSet->SelectedStartUV);
-			tile->SetEndUV(tile->GetStartUV() + tileSet->SelectedtexelTileSize);
-			tile->SetSpriteName(tileSet->selectedSpriteName);
-			tile->SetIsWalkable(false);
+	//GetMousePos();
+	//if (Mouse::Get()->Down(0))
+	//{
+	//	Tile* tile = GetTile(worldMpos);
+	//	if (tile)
+	//	{
 
-			if (CheckDuplication(tileSet->selectedSpriteName) == false)
-				usedDatas.push_back(tileSet->selectedSpriteName);
-		}
-	}
+	//		//tile->color = Values::Red;
+	//		tile->SetStartUV(tileSet->SelectedStartUV);
+	//		tile->SetEndUV(tile->GetStartUV() + tileSet->SelectedtexelTileSize);
+	//		tile->SetSpriteName(tileSet->selectedSpriteName);
+	//		if(tileSet->selectedSpriteName == "largepellet" || tileSet->selectedSpriteName == "smallpellet")
+	//			tile->SetIsWalkable(true);
+	//		else
+	//			tile->SetIsWalkable(false);
+
+	//		if (CheckDuplication(tileSet->selectedSpriteName) == false)
+	//			usedDatas.push_back(tileSet->selectedSpriteName);
+	//	}
+	//}
 
 	// 길찾기
 	/*
@@ -107,7 +109,7 @@ void TileMap::Update()
 	}*/
 
 	// 타일 지우기
-	if (Mouse::Get()->Down(1))
+	/*if (Mouse::Get()->Down(1))
 	{
 		Vector3 mPos = Mouse::Get()->GetPosition();
 		Tile* tile = GetTile(mPos);
@@ -121,6 +123,7 @@ void TileMap::Update()
 			tile->SetIsWalkable(true);
 		}
 	}
+*/
 
 }
 
@@ -142,6 +145,17 @@ void TileMap::Render()
 		for (uint x = 0; x < width; x++)
 		{
 			Tile& tile = tiles[y][x];
+			
+			// 먹힌 팔렛이면 검은색으로
+			if (tile.IsEaten())
+			{
+				tile.SetColor(Values::Black);
+				tile.SetStartUV(Vector2(0, 0));
+				tile.SetEndUV(Vector2(0, 0));
+
+				tile.SetSpriteName("");
+				tile.SetIsWalkable(true);
+			}
 			
 			{
 				D3D11_MAPPED_SUBRESOURCE subResource;
@@ -177,6 +191,8 @@ void TileMap::Render()
 			}
 
 			DC->DrawIndexed(IB->GetCount(), 0, 0);
+
+			
 		}
 	}
 
@@ -210,29 +226,34 @@ Tile * TileMap::GetTile(Vector3 position)
 {
 	uint x = (int)position.x / spacing;
 	uint y = (int)position.y / spacing;
+
+	if (x > (int)width - 1 || x < 0 || y >(int)height - 1 || y < 0) {
+		return nullptr;
+	}
+
 	return &tiles[y][x];
 }
 
 Tile * TileMap::GetNextTile(Vector3 position, Vector2 dir)
 {
-	int x = (int)(position.x / spacing + dir.x);
-	int y = (int)(position.y / spacing + dir.y);
+	int x = (int)(position.x / spacing) + dir.x;
+	int y = (int)(position.y / spacing) + dir.y;
 
-	// TODO : 예외 case 있음.. x,y가 배열 범위 넘어갈 경우 처리해주어야함(tunnel)
+	if (x > (int)width - 1 || x < 0 || y >(int)height - 1 || y < 0) {
+		return nullptr;
+	}
 
 	return &tiles[y][x];
 }
 
 Vector3 TileMap::GetNextTileCenterPos(Vector3 worldPos, Vector2 dir)
 {
-	int x = (int)(worldPos.x / spacing + dir.x);
-	int y = (int)(worldPos.y / spacing + dir.y);
+	int x = (int)(worldPos.x / spacing) + dir.x;
+	int y = (int)(worldPos.y / spacing) + dir.y;
 
 	if (x > (int)width - 1 || x < 0 || y >(int)height - 1 || y < 0) {
-		return GetTile(worldPos)->GetPosition();
+		// 고려 안해도 됨
 	}
-
-	tb->SetTileIndex(GetTile(worldPos)->GetIndex());
 
 	Vector3 vec = tiles[y][x].GetPosition();
 
@@ -245,14 +266,13 @@ Vector3 TileMap::GetNextTileCenterPos(Vector3 worldPos, Vector2 dir)
 
 Vector3 TileMap::GetNextTileCenterPos(Vector3 worldPos, Vector2 dir, OUT bool & bwalkable)
 {
-	int x = (int)(worldPos.x / spacing + dir.x);
-	int y = (int)(worldPos.y / spacing + dir.y);
+	int x = (int)(worldPos.x / spacing) + dir.x;
+	int y = (int)(worldPos.y / spacing) + dir.y;
 
 	if (x > (int)width - 1 || x < 0 || y > (int)height - 1 || y < 0) {
-		return GetTile(worldPos)->GetPosition();
+		// 고려 안해도 됨
 	}
 
-	tb->SetTileIndex(GetTile(worldPos)->GetIndex());
 	bwalkable = tiles[y][x].GetIsWalkable();
 
 	Vector3 vec = tiles[y][x].GetPosition();
@@ -261,6 +281,104 @@ Vector3 TileMap::GetNextTileCenterPos(Vector3 worldPos, Vector2 dir, OUT bool & 
 	vec.y += spacing * 0.5f;
 
 	return vec;
+}
+
+bool TileMap::IsOverCenter(Vector3 position, Vector2 dir)
+{
+	int x = (int)(position.x / spacing);
+	int y = (int)(position.y / spacing);
+
+	Vector3 vec = tiles[y][x].GetPosition();
+
+	vec.x += spacing * 0.5f;
+	vec.y += spacing * 0.5f;
+
+	if (dir == Vector2(0, 1))
+	{
+		if (position.y >= vec.y)
+			return true;
+	}
+	else if (dir == Vector2(0, -1))
+	{
+		if (position.y <= vec.y)
+			return true;
+	}
+	else if (dir == Vector2(1, 0))
+	{
+		if (position.x >= vec.x)
+			return true;
+	}
+	else if (dir == Vector2(-1, 0))
+	{
+		if (position.x <= vec.x)
+			return true;
+	}
+
+	return false;
+
+}
+
+bool TileMap::InSlowZone(Vector3 position)
+{
+	int x = (int)(position.x / spacing);
+	int y = (int)(position.y / spacing);
+
+	if (y == 18)
+	{
+		if (x >= 0 && x < 5)
+			return true;
+
+		if (x < (int)width && x >= (int)width - 5)
+			return true;
+
+	}
+	return false;
+}
+
+bool TileMap::InHomeGate(Vector3 position)
+{
+	int x = (int)(position.x / spacing);
+	int y = (int)(position.y / spacing);
+
+	if (y == 20 || y == 21)
+	{
+		if (x > 12 && x <= 14)
+			return true;
+	}
+	return false;
+}
+
+bool TileMap::InHome(Vector3 position)
+{
+	int x = (int)(position.x / spacing);
+	int y = (int)(position.y / spacing);
+
+	if (y == 17 || y == 18 || y == 19)
+	{
+		if (x > 10 && x <= 16)
+			return true;
+	}
+	return false;
+}
+
+bool TileMap::InSpecialZone(Vector3 position)
+{
+	int x = (int)(position.x / spacing);
+	int y = (int)(position.y / spacing);
+
+	if (y == 9)
+	{
+		if (x <= 17 && x >= 10)
+			return true;
+
+	}
+
+	if( y == 21)
+	{
+		if (x <= 17 && x >= 10)
+			return true;
+	}
+	return false;
 }
 
 void TileMap::Build()
@@ -389,4 +507,25 @@ bool TileMap::CheckDuplication(string str)
 
 	return iter != usedDatas.end();
 	// 찾으면 true 못찾으면 false
+}
+
+void TileMap::DisplayRedTargetTile(Vector3 position)
+{
+	if (position == Vector3(-1, -1, -1) || OutOfMap(position))
+	{
+		tb->SetTileIndex(-1);
+	}
+	else
+	{
+		tb->SetTileIndex(GetTile(position)->GetIndex());
+	}
+}
+
+bool TileMap::OutOfMap(Vector3 position)
+{
+	if (position.x <= 0 || position.x >= WinMaxWidth
+		|| position.y <= 0 || position.y >= WinMaxHeight)
+		return true;
+	else
+		return false;
 }

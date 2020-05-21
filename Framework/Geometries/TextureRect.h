@@ -24,6 +24,9 @@ public:
 	Vector3 GetCenterPosition() { return Vector3(position.x , position.y , 0.0f); }
 	Vector3 GetCenterPositionInSS();
 
+	void SetSpeed(float speed) { this->speed = speed; }
+	float GetSpeed() { return speed; }
+
 protected:
 	void TransformedVertices();
 	void UpdateWorld();

@@ -64,3 +64,29 @@ void Time::Stop()
 	runningTime += (float)(stopTime - lastTime) / (float)ticksPerSecond;
 	isTimerStopped = true;
 }
+
+bool Time::Timer(INT64 before, float& time, bool isStop, OUT float& elapsed)
+{
+	elapsed = (float)(currentTime - before) / (float)ticksPerSecond;
+
+	if (elapsed > time)
+		return true;
+	else
+	{
+		if (isStop)
+		{
+			// time °ª º¯°æ
+			time -= elapsed;
+		}
+		return false;
+	}
+		
+
+}
+
+INT64 Time::GetBefore()
+{
+	INT64 stopTime = 0;
+	QueryPerformanceCounter((LARGE_INTEGER *)&stopTime);
+	return stopTime;
+}

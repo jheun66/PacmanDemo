@@ -2,6 +2,14 @@
 
 #include "Character.h"
 
+enum GhostMode
+{
+	SCATTER,
+	CHASE,
+	FRIGHTEN,
+	EATEN
+};
+
 class Ghost : public Character
 {
 public:
@@ -10,19 +18,39 @@ public:
 
 	void Update();
 	virtual void ChangeAnimClip() = 0;
+	virtual void ChangeMode() = 0;
 
 	void SetDirection(Direction dir) { this->dir = dir; }
 	Direction GetDirection() { return dir; }
 
-protected:
-	bool isDead = false;	// 일시적인 죽음, 상자안으로 돌아감.
-	bool isScared = false;	// 팩맨이 큰 팰럿을 먹었는지 여부
+	GhostMode GetMode() { return mode; }
+	void SetMode(GhostMode mode) { this->mode = mode; }
+	GhostMode GetExMode() { return exMode; }
+	void SetExMode(GhostMode exMode) { this->exMode = exMode; }
 
-	wstring ghostFile = L"";
+	void InitTimerS();
+	void InitTimerC();
+	void InitTimerF();
+
+	void SetLevel(uint level) { this->level = level; }
+	uint GetLevel() { return level; }
+
+	void SetWave(uint wave) { this->wave = wave; }
+	uint GetWave() { return wave; }
+
+	void SetTileMap(class TileMap* tm) { this->tm = tm; }
+
+
+protected:
+
+	
 	wstring eyeFile = L"";
 	wstring scaredFile = L"";
 
 	Direction dir;	// 0 : 시작상태 , 1 : 위, 2 : 아래, 3 : 왼쪽, 4 : 오른쪽
+
+	GhostMode mode;
+	GhostMode exMode;
 
 	// 애니메이션 클립들
 	AnimationClip* runD = nullptr;
@@ -38,5 +66,25 @@ protected:
 	AnimationClip* eRunU = nullptr;
 	AnimationClip* eRunR = nullptr;
 
+
+	// 타이머 관련
+	INT64 before;
+
+	float elapsedS = 0;
+	float elapsedC = 0;
+	float elapsedF = 0;
+
+	bool setTimerS = false;
+	bool setTimerC = false;
+	bool setTimerF = false;
+
+	// level 관련
+	uint level = 1;
+	uint wave = 1;
+
+	float scatterTimes[21][4];
+	float chaseTimes[21][4];
+
+	class TileMap* tm = nullptr;
 
 };

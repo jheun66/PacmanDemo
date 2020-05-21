@@ -11,7 +11,8 @@ public:
 		UINT frameCount,
 		D3DXVECTOR2 startPos,
 		D3DXVECTOR2 endPos,
-		bool bReversed = false
+		bool bReversed = false,
+		bool playOnce = false
 	);
 
 	// json 파일 이용하여 클립생성
@@ -20,7 +21,8 @@ public:
 		wstring clipName,
 		wstring jsonPath,
 		vector<string> fileNames,
-		bool bReversed = false
+		bool bReversed = false,
+		bool playOnce = false
 	);
 
 
@@ -33,6 +35,7 @@ private:
 	UINT frameCount = 0;
 	ID3D11ShaderResourceView* srv = nullptr;
 	bool bReversed = false;
+	bool playOnce = false;
 };
 
 class Animator

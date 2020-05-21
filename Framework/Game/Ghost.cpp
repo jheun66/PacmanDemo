@@ -25,8 +25,45 @@ Ghost::Ghost(Vector3 position, Vector3 size)
 	animator->AddAnimClip(eRunR);
 	animator->AddAnimClip(scared);
 
-	dir = DOWN;
+	mode = SCATTER;
 
+	for (uint l = 0; l < 22; l++)
+	{
+		if (l == 0)
+		{
+			scatterTimes[l][0] = 7;
+			scatterTimes[l][1] = 7;
+			scatterTimes[l][2] = 5;
+			scatterTimes[l][3] = 5;
+			chaseTimes[l][0] = 20;
+			chaseTimes[l][1] = 20;
+			chaseTimes[l][2] = 20;
+			chaseTimes[l][3] = FLT_MAX;
+		}
+		else if (l < 5)
+		{
+			scatterTimes[l][0] = 7;
+			scatterTimes[l][1] = 7;
+			scatterTimes[l][2] = 5;
+			scatterTimes[l][3] = 0.01f;
+			chaseTimes[l][0] = 20;
+			chaseTimes[l][1] = 20;
+			chaseTimes[l][2] = 1033;
+			chaseTimes[l][3] = FLT_MAX;
+		}
+		else
+		{
+			scatterTimes[l][0] = 5;
+			scatterTimes[l][1] = 5;
+			scatterTimes[l][2] = 5;
+			scatterTimes[l][3] = 0.01f;
+			chaseTimes[l][0] = 20;
+			chaseTimes[l][1] = 20;
+			chaseTimes[l][2] = 1037;
+			chaseTimes[l][3] = FLT_MAX;
+		}
+
+	}
 }
 
 Ghost::~Ghost()
@@ -47,4 +84,22 @@ Ghost::~Ghost()
 void Ghost::Update()
 {
 	__super::Update();
+}
+
+void Ghost::InitTimerS()
+{
+	elapsedS = 0;
+	setTimerS = false;
+}
+
+void Ghost::InitTimerC()
+{
+	elapsedC = 0;
+	setTimerC = false;
+}
+
+void Ghost::InitTimerF()
+{
+	elapsedF = 0;
+	setTimerF = false;
 }

@@ -87,6 +87,19 @@ void AnimationRect::Move(Vector3 destination)
 	UpdateWorld();
 }
 
+void AnimationRect::Move(Vector2 direction)
+{
+	if (direction == Vector2(0,1))
+		position.y += speed * Time::Delta();
+	else if (direction == Vector2(0, -1))
+		position.y -= speed * Time::Delta();
+	else if (direction == Vector2(-1, 0))
+		position.x -= speed * Time::Delta();
+	else if (direction == Vector2(1, 0))
+		position.x += speed * Time::Delta();
+	UpdateWorld();
+}
+
 void AnimationRect::SetAnimator(Animator * animator)
 {
 	this->animator = animator;

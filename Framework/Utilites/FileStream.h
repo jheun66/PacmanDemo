@@ -73,6 +73,8 @@ public:
 	void Read(Tile& value);
 	class Tile ReadTile();
 
+
+
 private:
 	ofstream out;
 	ifstream in;
