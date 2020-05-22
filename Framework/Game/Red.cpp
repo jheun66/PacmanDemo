@@ -35,7 +35,7 @@ Red::Red(Vector3 position, Vector3 size)
 
 
 	dir = LEFT;
-	startPositionInHome = Vector3(WinMaxWidth / 2, 296, 0);
+	startPositionInHome = Vector3(WinMaxWidth / 2, 288, 0);
 }
 
 Red::~Red()
@@ -48,6 +48,8 @@ void Red::Update()
 {	
 	ChangeAnimClip();
 	ChangeMode();
+	tm->DisplayRedTargetTile(targetPos);
+
 	__super::Update();
 }
 
@@ -185,85 +187,36 @@ void Red::ChangeMode()
 
 }
 
-Vector3 Red::ChangeDirection(Vector3 targetPos, OUT Direction &dir)
+
+
+
+void Red::SetTargetPos(Player* player)
 {
-	Vector3 tilePos[4];
-	bool bWalkable[4];
-	float distance = FLT_MAX;
-	int possiblePath = 0;
-	tilePos[UP] = tm->GetNextTileCenterPos(GetPosition(), dirVec[UP], bWalkable[UP]);
-	tilePos[DOWN] = tm->GetNextTileCenterPos(GetPosition(), dirVec[DOWN], bWalkable[DOWN]);
-	tilePos[LEFT] = tm->GetNextTileCenterPos(GetPosition(), dirVec[LEFT], bWalkable[LEFT]);
-	tilePos[RIGHT] = tm->GetNextTileCenterPos(GetPosition(), dirVec[RIGHT], bWalkable[RIGHT]);
-
-	if (tm->InSpecialZone(GetPosition()))
+	if (mode == SCATTER)
 	{
-		bWalkable[UP] = false;
+		Tile** tiles = tm->GetTiles();
+		targetPos = tiles[35][25].GetPosition();
+		targetPos.x += tm->GetSpacing() * 0.5f;
+		targetPos.y += tm->GetSpacing() * 0.5f;
 	}
-
-
-	// 임시 방향
-	Direction tempDir = dir;
-
-	// next는 경로가 하나일 때를 위한 임시 방향
-	Direction NextDir;
-	
-	// 가능한 방향이 반대방향 제외하고 1개면 그방향으로 (1자나 모퉁이에서)
-	for (int i = 0; i < 4; i++)
+	else if (mode == CHASE)
 	{
-		if (bWalkable[i] == true && i != (3 - tempDir))
-		{
-			possiblePath++;
-
-			// next는 경로가 하나일 때를 위한 임시 방향
-			NextDir = (Direction)i;
-		}
+		targetPos = player->GetPosition();
 	}
-
-	if (possiblePath < 2)
+	else if (mode == FRIGHTEN)
 	{
-		dir = NextDir;
-	}
-	else if( targetPos != Vector3(-1,-1,-1) )
-	{
-		// 반대방향, 불가능한 방향 제외 => 반대방향 제외하고 거리 짧을 쪽 ( 교차로 에서 )
-		for (int i = 0; i < 4; i++)
-		{
-			if (bWalkable[i] == true && i != (3 - tempDir))
-			{
-				// 거리 계산
-				float temp = D3DXVec3Length(&(tilePos[i] - targetPos));
-				if (temp < distance)
-				{
-					distance = temp;
-					dir = (Direction)i;
-				}
-			}
-		}
+		targetPos = Vector3(-1, -1, -1);
 	}
 	else
 	{
-		// 교차로에서 가능한 랜덤 방향
-		while (1)
-		{
-			tempDir = (Direction)(rand() % 4);
-			if (bWalkable[tempDir])
-				break;
-		}
-		dir = tempDir;
+		targetPos = startPositionInHome;
+
 	}
-
-	nextTile = tm->GetTile(tilePos[dir]);
-
-	return tilePos[dir];
-
 }
 
-
-void Red::MoveToTarget(Player* player)
+void Red::MoveToTarget()
 {
-	Vector3 targetPos;
-	
+
 	if (mode == SCATTER)
 	{
 
@@ -282,28 +235,18 @@ void Red::MoveToTarget(Player* player)
 		}
 		else
 		{
-			Tile** tiles = tm->GetTiles();
-			targetPos = tiles[35][25].GetPosition();
-			targetPos.x += tm->GetSpacing() * 0.5f;
-			targetPos.y += tm->GetSpacing() * 0.5f;
-
 			currentTile = tm->GetTile(GetPosition());
 
 			if (currentTile == nextTile && tm->IsOverCenter(GetPosition(), dirVec[dir]))
 			{
-				nextTilePos = ChangeDirection(targetPos, dir);
+				ChangeDirection();
 			}
-			else
-			{
-				nextTilePos = tm->GetNextTileCenterPos(GetPosition(), dirVec[dir]);
-			}
-
 
 			Move(dirVec[dir]);
 
 		}
 
-		
+
 	}
 	else if (mode == CHASE)
 	{
@@ -312,35 +255,26 @@ void Red::MoveToTarget(Player* player)
 		if (tm->InSlowZone(GetPosition()) || tm->OutOfMap(GetPosition()))
 		{
 			SetSpeed(60);
-			// 터널에서 
 			MoveInTunnel();
 		}
 		else if (tm->InHome(GetPosition()))
 		{
-			// 터널에서 
 			MoveInHome();
 		}
 		else
 		{
-			
-			targetPos = player->GetPosition();
-
 			currentTile = tm->GetTile(GetPosition());
 
 
 			if (currentTile == nextTile && tm->IsOverCenter(GetPosition(), dirVec[dir]))
 			{
-				nextTilePos = ChangeDirection(targetPos, dir);
-			}
-			else
-			{
-				nextTilePos = tm->GetNextTileCenterPos(GetPosition(), dirVec[dir]);
+				ChangeDirection();
 			}
 
 			Move(dirVec[dir]);
 
 		}
-		
+
 	}
 	else if (mode == FRIGHTEN)
 	{
@@ -349,26 +283,19 @@ void Red::MoveToTarget(Player* player)
 		if (tm->InSlowZone(GetPosition()) || tm->OutOfMap(GetPosition()))
 		{
 			SetSpeed(60);
-			// 터널에서 
 			MoveInTunnel();
 		}
 		else if (tm->InHome(GetPosition()))
 		{
-			// 터널에서 
 			MoveInHome();
 		}
 		else
 		{
-			targetPos = Vector3(-1, -1, -1);
 			currentTile = tm->GetTile(GetPosition());
 
 			if (currentTile == nextTile && tm->IsOverCenter(GetPosition(), dirVec[dir]))
 			{
-				nextTilePos = ChangeDirection(targetPos, dir);
-			}
-			else
-			{
-				nextTilePos = tm->GetNextTileCenterPos(GetPosition(), dirVec[dir]);
+				ChangeDirection();
 			}
 
 			Move(dirVec[dir]);
@@ -388,18 +315,11 @@ void Red::MoveToTarget(Player* player)
 		}
 		else
 		{
-			targetPos = startPositionInHome;
-			//targetPos.y += 48;
-
 			currentTile = tm->GetTile(GetPosition());
 
 			if (currentTile == nextTile && tm->IsOverCenter(GetPosition(), dirVec[dir]))
 			{
-				nextTilePos = ChangeDirection(targetPos, dir);
-			}
-			else
-			{
-				nextTilePos = tm->GetNextTileCenterPos(GetPosition(), dirVec[dir]);
+				ChangeDirection();
 			}
 
 			Move(dirVec[dir]);
@@ -407,9 +327,7 @@ void Red::MoveToTarget(Player* player)
 		}
 
 	}
-	
-	tm->DisplayRedTargetTile(targetPos);
-	
+
 }
 
 void Red::MoveToHome()
@@ -458,28 +376,3 @@ void Red::MoveInHome()
 	Move(dirVec[dir]);
 }
 
-void Red::SetNextTile()
-{
-	nextTile = tm->GetNextTile(GetPosition(), dirVec[dir]);
-}
-
-
-// TODO : 빠져나와서 넥스트 타일 수정
-void Red::MoveInTunnel()
-{
-	Vector3 pos = GetPosition();
-	
-	if (pos.x > WinMaxWidth + (float(tm->GetSpacing()) * 3))
-	{
-		pos.x = -(float(tm->GetSpacing()) * 3);
-		Move(pos);
-	}
-	else if (pos.x < -(float(tm->GetSpacing()) * 3))
-	{
-		pos.x = WinMaxWidth + (float(tm->GetSpacing()) * 3);
-		Move(pos);
-	}
-	Move(dirVec[dir]);
-
-	nextTile = tm->GetNextTile(pos, dirVec[dir]);
-}

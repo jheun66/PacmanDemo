@@ -160,6 +160,9 @@ copy /Y "$(SolutionDir)Debug\$(ProjectName).pdb" "$(SolutionDir)UnitTest"</Comma
   <ItemGroup>
     <ClInclude Include="Game\Character.h" />
     <ClInclude Include="Game\Collision.h" />
+    <ClInclude Include="Game\Cyan.h" />
+    <ClInclude Include="Game\Orange.h" />
+    <ClInclude Include="Game\Pink.h" />
     <ClInclude Include="Game\Player.h" />
     <ClInclude Include="Game\Ghost.h" />
     <ClInclude Include="Game\Red.h" />
@@ -209,6 +212,9 @@ copy /Y "$(SolutionDir)Debug\$(ProjectName).pdb" "$(SolutionDir)UnitTest"</Comma
     </ClCompile>
     <ClCompile Include="Game\Character.cpp" />
     <ClCompile Include="Game\Collision.cpp" />
+    <ClCompile Include="Game\Cyan.cpp" />
+    <ClCompile Include="Game\Orange.cpp" />
+    <ClCompile Include="Game\Pink.cpp" />
     <ClCompile Include="Game\Player.cpp" />
     <ClCompile Include="Game\Ghost.cpp" />
     <ClCompile Include="Game\Red.cpp" />

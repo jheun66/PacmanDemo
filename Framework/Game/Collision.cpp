@@ -4,7 +4,9 @@
 #include "Game/Player.h"
 #include "Game/Ghost.h"
 #include "Game/Red.h"
-
+#include "Game/Pink.h"
+#include "Game/Orange.h"
+#include "Game/Cyan.h"
 #include "Collision.h"
 
 uint Collision::pelletCount = 0;
@@ -77,9 +79,23 @@ void Collision::WithGhost(Player * player, Ghost * ghost, TileMap* tm)
 				
 				//((Red*)ghost)->SetNextTile(tm);
 				// setNextTile을 Ghost에 선언해도 되지만 그냥 업캐스팅
-				Red* tmp = dynamic_cast<Red*>(ghost);
+				/*Red* tmp = dynamic_cast<Red*>(ghost);
 				if (tmp != nullptr)
 					tmp->SetNextTile();
+
+				Pink* tmp2 = dynamic_cast<Pink*>(ghost);
+				if (tmp2 != nullptr)
+					tmp2->SetNextTile();
+
+				Orange* tmp3 = dynamic_cast<Orange*>(ghost);
+				if (tmp3 != nullptr)
+					tmp3->SetNextTile();
+
+				Cyan* tmp4 = dynamic_cast<Cyan*>(ghost);
+				if (tmp4 != nullptr)
+					tmp4->SetNextTile();*/
+
+				ghost->SetNextTile();
 
 				player->SetState(DEATH);
 			}

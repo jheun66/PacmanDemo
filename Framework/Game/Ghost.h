@@ -39,7 +39,18 @@ public:
 	uint GetWave() { return wave; }
 
 	void SetTileMap(class TileMap* tm) { this->tm = tm; }
+	
 
+	void ChangeDirection();
+	void MoveToTarget();
+
+
+	void MoveInTunnel();
+
+	void SetNextTile();
+
+	void SetSpeed(float speed) { animRect->SetSpeed(speed); }
+	float GetSpeed() { return animRect->GetSpeed(); }
 
 protected:
 
@@ -86,5 +97,14 @@ protected:
 	float chaseTimes[21][4];
 
 	class TileMap* tm = nullptr;
+
+	class Tile* currentTile = nullptr;
+	Tile* nextTile = nullptr;
+
+	Vector3 targetPos;
+
+	// 죽었다가 목적지에 도달하면 준비
+	Vector3 startPositionInHome;
+	bool ready = false;
 
 };

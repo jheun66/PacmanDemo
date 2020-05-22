@@ -45,6 +45,9 @@
     <ClInclude Include="Game\Ghost.h" />
     <ClInclude Include="Game\Red.h" />
     <ClInclude Include="Game\Collision.h" />
+    <ClInclude Include="Game\Pink.h" />
+    <ClInclude Include="Game\Orange.h" />
+    <ClInclude Include="Game\Cyan.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Systems\Graphics.cpp" />
@@ -87,6 +90,9 @@
     <ClCompile Include="Game\Ghost.cpp" />
     <ClCompile Include="Game\Red.cpp" />
     <ClCompile Include="Game\Collision.cpp" />
+    <ClCompile Include="Game\Pink.cpp" />
+    <ClCompile Include="Game\Orange.cpp" />
+    <ClCompile Include="Game\Cyan.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

@@ -10,26 +10,18 @@ public:
 	void Update();
 	void ChangeAnimClip() override;
 	void ChangeMode() override;
-	Vector3 ChangeDirection(Vector3 targetPos, OUT Direction &dir);
-	void MoveToTarget(class Player* player);
+	
 	void MoveToHome();
 	void MoveInHome();
+	
+	void SetTargetPos(class Player* player);
 
-	void SetNextTile();
-	void MoveInTunnel();
+	void MoveToTarget();
 
-	void SetSpeed(float speed) { animRect->SetSpeed(speed); }
-	float GetSpeed() { return animRect->GetSpeed(); }
 
 private:
 	wstring ghostFile = L"";
 
-	Vector3 nextTilePos;
-	class Tile* currentTile = nullptr;
-	Tile* nextTile = nullptr;
 
-	// 죽었다가 목적지에 도달하면 준비
-	Vector3 startPositionInHome;
-	bool ready = false;
 };
 

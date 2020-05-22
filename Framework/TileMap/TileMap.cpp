@@ -521,6 +521,42 @@ void TileMap::DisplayRedTargetTile(Vector3 position)
 	}
 }
 
+void TileMap::DisplayPinkTargetTile(Vector3 position)
+{
+	if (position == Vector3(-1, -1, -1) || OutOfMap(position))
+	{
+		tb->SetTileIndex2(-1);
+	}
+	else
+	{
+		tb->SetTileIndex2(GetTile(position)->GetIndex());
+	}
+}
+
+void TileMap::DisplayOrangeTargetTile(Vector3 position)
+{
+	if (position == Vector3(-1, -1, -1) || OutOfMap(position))
+	{
+		tb->SetTileIndex3(-1);
+	}
+	else
+	{
+		tb->SetTileIndex3(GetTile(position)->GetIndex());
+	}
+}
+
+void TileMap::DisplayCyanTargetTile(Vector3 position)
+{
+	if (position == Vector3(-1, -1, -1) || OutOfMap(position))
+	{
+		tb->SetTileIndex4(-1);
+	}
+	else
+	{
+		tb->SetTileIndex4(GetTile(position)->GetIndex());
+	}
+}
+
 bool TileMap::OutOfMap(Vector3 position)
 {
 	if (position.x <= 0 || position.x >= WinMaxWidth

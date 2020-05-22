@@ -13,10 +13,21 @@ public:
 	void SetTileIndex(uint index) {
 		data.tileIndex = index;
 	}
+	void SetTileIndex2(uint index) {
+		data.tileIndex2 = index;
+	}
+	void SetTileIndex3(uint index) {
+		data.tileIndex3 = index;
+	}
+	void SetTileIndex4(uint index) {
+		data.tileIndex4 = index;
+	}
 	struct Struct
 	{
 		uint tileIndex = -1;
-		Vector3 dummy;
+		uint tileIndex2 = -1;
+		uint tileIndex3 = -1;
+		uint tileIndex4 = -1;
 	};
 
 private:
@@ -67,6 +78,12 @@ public:
 	uint GetSpacing() { return spacing; }
 
 	void DisplayRedTargetTile(Vector3 position);
+
+	void DisplayPinkTargetTile(Vector3 position);
+
+	void DisplayOrangeTargetTile(Vector3 position);
+
+	void DisplayCyanTargetTile(Vector3 position);
 
 	bool OutOfMap(Vector3 position);
 

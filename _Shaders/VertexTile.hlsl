@@ -53,6 +53,9 @@ PixelInput VS(VertexInput input)
 cbuffer TileBuffer : register(b0)
 {
     uint _tileIndex;
+    uint _tileIndex2;
+    uint _tileIndex3;
+    uint _tileIndex4;
 }
 
 Texture2D sourceTex : register(t0); // 0~127
@@ -84,6 +87,19 @@ float4 PS(PixelInput input) : SV_Target
         result = float4(1, 0, 0, 1);
     }
     
+    if (_tileIndex2 != -1 && _tileIndex2 == input.index)
+    {
+        result = float4(255.0f, 192.0f, 203.0f, 255.0f) / 255.0f;
+    }
+    
+    if (_tileIndex3 != -1 && _tileIndex3 == input.index)
+    {
+        result = float4(255.0f, 165.0f, 0.0f, 255.0f) / 255.0f;
+    }
+    if (_tileIndex4 != -1 && _tileIndex4 == input.index)
+    {
+        result = float4(0, 1, 1, 1);
+    }
     
     return result;
     

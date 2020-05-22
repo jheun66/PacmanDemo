@@ -32,6 +32,9 @@ private:
 
 	vector<class Ghost*> ghosts;
 	class Red* red = nullptr;
+	class Pink* pink = nullptr;
+	class Orange* orange = nullptr;
+	class Cyan* cyan = nullptr;
 
 	Vector3 destination = Values::ZeroVector;
 	bool bWalkable = true;
