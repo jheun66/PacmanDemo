@@ -13,6 +13,7 @@ public:
 	Vector3 ChangeDirection(Vector3 targetPos, OUT Direction &dir);
 	void MoveToTarget(class Player* player);
 	void MoveToHome();
+	void MoveInHome();
 
 	void SetNextTile();
 	void MoveInTunnel();

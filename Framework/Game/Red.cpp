@@ -266,40 +266,40 @@ void Red::MoveToTarget(Player* player)
 	
 	if (mode == SCATTER)
 	{
+
+		SetSpeed(100);
 		// 터널 입구 + 터널
 		if (tm->InSlowZone(GetPosition()) || tm->OutOfMap(GetPosition()))
 		{
-			SetSpeed(5);
+			SetSpeed(60);
 			// 터널에서 
 			MoveInTunnel();
 		}
+		else if (tm->InHome(GetPosition()))
+		{
+			// 터널에서 
+			MoveInHome();
+		}
 		else
 		{
-			SetSpeed(10);
 			Tile** tiles = tm->GetTiles();
 			targetPos = tiles[35][25].GetPosition();
 			targetPos.x += tm->GetSpacing() * 0.5f;
 			targetPos.y += tm->GetSpacing() * 0.5f;
 
-
 			currentTile = tm->GetTile(GetPosition());
 
-			if (currentTile == nextTile)
+			if (currentTile == nextTile && tm->IsOverCenter(GetPosition(), dirVec[dir]))
 			{
 				nextTilePos = ChangeDirection(targetPos, dir);
 			}
 			else
 			{
-				SetNextTile();
 				nextTilePos = tm->GetNextTileCenterPos(GetPosition(), dirVec[dir]);
 			}
 
-			Vector3 newPos = Values::ZeroVector;
-			if (!Math::Approximation(GetPosition(), nextTilePos, 0.001f))
-			{
-				D3DXVec3Lerp(&newPos, &GetPosition(), &nextTilePos, GetSpeed() * Time::Delta());
-				Move(newPos);
-			}
+
+			Move(dirVec[dir]);
 
 		}
 
@@ -307,111 +307,102 @@ void Red::MoveToTarget(Player* player)
 	}
 	else if (mode == CHASE)
 	{
-		
+		SetSpeed(100);
 		// 터널 입구 + 터널
 		if (tm->InSlowZone(GetPosition()) || tm->OutOfMap(GetPosition()))
 		{
-			SetSpeed(5);
+			SetSpeed(60);
 			// 터널에서 
 			MoveInTunnel();
 		}
+		else if (tm->InHome(GetPosition()))
+		{
+			// 터널에서 
+			MoveInHome();
+		}
 		else
 		{
-			SetSpeed(10);
-
+			
 			targetPos = player->GetPosition();
 
 			currentTile = tm->GetTile(GetPosition());
 
 
-			if (currentTile == nextTile)
+			if (currentTile == nextTile && tm->IsOverCenter(GetPosition(), dirVec[dir]))
 			{
 				nextTilePos = ChangeDirection(targetPos, dir);
 			}
 			else
 			{
-				SetNextTile();
 				nextTilePos = tm->GetNextTileCenterPos(GetPosition(), dirVec[dir]);
 			}
 
-			Vector3 newPos = Values::ZeroVector;
-			if (!Math::Approximation(GetPosition(), nextTilePos, 0.001f))
-			{
-				D3DXVec3Lerp(&newPos, &GetPosition(), &nextTilePos, GetSpeed() * Time::Delta());
-				Move(newPos);
-			}
+			Move(dirVec[dir]);
 
 		}
 		
 	}
 	else if (mode == FRIGHTEN)
 	{
-		SetSpeed(8);
+		SetSpeed(60);
 		// 터널 입구 + 터널
 		if (tm->InSlowZone(GetPosition()) || tm->OutOfMap(GetPosition()))
 		{
-			SetSpeed(5);
+			SetSpeed(60);
 			// 터널에서 
 			MoveInTunnel();
+		}
+		else if (tm->InHome(GetPosition()))
+		{
+			// 터널에서 
+			MoveInHome();
 		}
 		else
 		{
 			targetPos = Vector3(-1, -1, -1);
 			currentTile = tm->GetTile(GetPosition());
 
-			if (currentTile == nextTile)
+			if (currentTile == nextTile && tm->IsOverCenter(GetPosition(), dirVec[dir]))
 			{
 				nextTilePos = ChangeDirection(targetPos, dir);
 			}
 			else
 			{
-				SetNextTile();
 				nextTilePos = tm->GetNextTileCenterPos(GetPosition(), dirVec[dir]);
 			}
 
-			Vector3 newPos = Values::ZeroVector;
-			if (!Math::Approximation(GetPosition(), nextTilePos, 0.001f))
-			{
-				D3DXVec3Lerp(&newPos, &GetPosition(), &nextTilePos, GetSpeed() * Time::Delta());
-				Move(newPos);
-			}
+			Move(dirVec[dir]);
 		}
 	}
 	else
 	{
-
+		SetSpeed(100);
 		if (tm->InHomeGate(GetPosition()) || tm->InHome(GetPosition()))
 		{
 			MoveToHome();
 		}
 		else if (tm->InSlowZone(GetPosition()) || tm->OutOfMap(GetPosition()))
 		{
-			SetSpeed(5);
+			SetSpeed(60);
 			MoveInTunnel();
 		}
 		else
 		{
 			targetPos = startPositionInHome;
-			targetPos.y += 48;
+			//targetPos.y += 48;
 
 			currentTile = tm->GetTile(GetPosition());
 
-			if (currentTile == nextTile)
+			if (currentTile == nextTile && tm->IsOverCenter(GetPosition(), dirVec[dir]))
 			{
 				nextTilePos = ChangeDirection(targetPos, dir);
 			}
 			else
 			{
-				SetNextTile();
 				nextTilePos = tm->GetNextTileCenterPos(GetPosition(), dirVec[dir]);
 			}
 
-			Vector3 newPos = Values::ZeroVector;
-			if (!Math::Approximation(GetPosition(), nextTilePos, 0.001f))
-			{
-				D3DXVec3Lerp(&newPos, &GetPosition(), &nextTilePos, GetSpeed() * Time::Delta());
-				Move(newPos);
-			}
+			Move(dirVec[dir]);
 
 		}
 
@@ -423,39 +414,61 @@ void Red::MoveToTarget(Player* player)
 
 void Red::MoveToHome()
 {
-	Vector3 targetPos = startPositionInHome;
-	targetPos.y += 48;
-	Vector3 newPos = Values::ZeroVector;
-	if (!Math::Approximation(GetPosition(), startPositionInHome, 0.001f))
+	if (dir == LEFT)
 	{
-		D3DXVec3Lerp(&newPos, &GetPosition(), &startPositionInHome, GetSpeed() * Time::Delta());
-		Move(newPos);
+		if (GetPosition().x > startPositionInHome.x)
+		{
+			Move(dirVec[dir]);
+		}
+		else
+		{
+			Direction tmp = DOWN;
+			Move(dirVec[tmp]);
+			if (GetPosition().y < startPositionInHome.y)
+			{
+				Move(startPositionInHome);
+				ready = true;
+			}
+		}
 	}
-	else
+	else if (dir == RIGHT)
 	{
-		ready = true;
+		if (GetPosition().x < startPositionInHome.x)
+		{
+			Move(dirVec[dir]);
+		}
+		else
+		{
+			Direction tmp = DOWN;
+			Move(dirVec[tmp]);
+			if (GetPosition().y < startPositionInHome.y)
+			{
+				Move(startPositionInHome);
+				ready = true;
+			}
+		}
 	}
+	nextTile = tm->GetNextTile(GetPosition(), dirVec[UP]);
+}
+
+void Red::MoveInHome()
+{
+	dir = UP;
+	nextTile = tm->GetNextTile(GetPosition(), dirVec[UP]);
+	Move(dirVec[dir]);
 }
 
 void Red::SetNextTile()
 {
-	nextTile = tm->GetTile(tm->GetNextTileCenterPos(GetPosition(), dirVec[dir]));
+	nextTile = tm->GetNextTile(GetPosition(), dirVec[dir]);
 }
 
+
+// TODO : 빠져나와서 넥스트 타일 수정
 void Red::MoveInTunnel()
 {
 	Vector3 pos = GetPosition();
-	if (dir == LEFT)
-	{
-		nextTilePos = pos;
-		nextTilePos.x -= float(tm->GetSpacing());
-	}
-	else if (dir == RIGHT)
-	{
-		nextTilePos = pos;
-		nextTilePos.x += float(tm->GetSpacing());
-	}
-
+	
 	if (pos.x > WinMaxWidth + (float(tm->GetSpacing()) * 3))
 	{
 		pos.x = -(float(tm->GetSpacing()) * 3);
@@ -466,14 +479,7 @@ void Red::MoveInTunnel()
 		pos.x = WinMaxWidth + (float(tm->GetSpacing()) * 3);
 		Move(pos);
 	}
-	else
-	{
-		Vector3 newPos = Values::ZeroVector;
-		if (!Math::Approximation(pos, nextTilePos, 0.1f))
-		{
-			D3DXVec3Lerp(&newPos, &pos, &nextTilePos, GetSpeed() * Time::Delta());
-			Move(newPos);
-		}
-	}
+	Move(dirVec[dir]);
 
+	nextTile = tm->GetNextTile(pos, dirVec[dir]);
 }
